@@ -4,48 +4,66 @@ import nextstep.utils.Console;
 import nextstep.utils.Randoms;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 public class Application {
     public static void main(String[] args) {
-        // TODO 숫자 야구 게임 구현
-        List<Integer> sourceIntList = getThreeRandomNumbers();
-        Balls sourceBalls = new Balls(sourceIntList);
-
-        System.out.println("겜시작");
-        int targetIntList = Integer.parseInt(Console.readLine());
-
-        Balls targetBalls = new Balls(targetIntList);
-        List<Result> result = sourceBalls.compare(targetBalls);
-        printResult(result);
+        String willContinue = "1";
+        while (willContinue.equals("1")) {
+            playOneTime();
+            System.out.println("게임을 새로 시작하려면 1, 종료하려면 2를 입력하세요.");
+            willContinue = Console.readLine();
+        }
     }
 
-    private static List<Integer> getThreeRandomNumbers() {
+    private static void playOneTime() {
+        int sourceInt = getSourceInt();
+        Balls sourceBalls = new Balls(sourceInt);
+
+        while (true) {
+            int targetInt = getTargetInt();
+            Balls targetBalls = new Balls(targetInt);
+
+            List<Result> result = sourceBalls.compare(targetBalls);
+            String result2 = printResult(result);
+            System.out.println(result2);
+            if (result2.equals("3스트라이크")) {
+                System.out.println("3개의 숫자를 모두 맞히셨습니다! 게임 끝");
+                return;
+            }
+        }
+    }
+
+    private static int getTargetInt() {
+        System.out.print("숫자를 입력해주세요 : ");
+        int targetIntList = Integer.parseInt(Console.readLine());
+        return targetIntList;
+    }
+
+    private static int getSourceInt() {
         List<Integer> result = new ArrayList<>();
-        while(result.size()<3) {
+        while (result.size() < 3) {
             int val = Randoms.pickNumberInRange(1, 9);
             if (result.contains(val)) {
                 continue;
             }
             result.add(val);
         }
-        return result;
+        return result.get(0) * 100 + result.get(1) * 10 + result.get(2);
     }
 
 
-    private static void printResult(List<Result> result) {
+    private static String printResult(List<Result> result) {
         int strikeCounts = countStrike(result);
         int ballCounts = countBall(result);
         if (strikeCounts > 0 && ballCounts > 0) {
-            System.out.println(String.format("%d스트라이크 %d볼", strikeCounts, ballCounts));
+            return String.format("%d스트라이크 %d볼", strikeCounts, ballCounts);
         } else if (strikeCounts > 0) {
-            System.out.println(String.format("%d스트라이크", strikeCounts));
+            return String.format("%d스트라이크", strikeCounts);
         } else if (ballCounts > 0) {
-            System.out.println(String.format("%d볼", ballCounts));
+            return String.format("%d볼", ballCounts);
         } else {
-            System.out.println("낫싱");
+            return "낫싱";
         }
     }
 
