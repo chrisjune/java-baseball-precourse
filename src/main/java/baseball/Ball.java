@@ -9,12 +9,8 @@ public class Ball {
         this.index = index;
     }
     public Result compare(Ball targetBall){
-        if (value == targetBall.value && index == targetBall.index){
-            return Result.STRIKE;
-        }
-        if (value == targetBall.value){
-            return Result.BALL;
-        }
+        if (value == targetBall.value && index == targetBall.index) return Result.STRIKE;
+        if (value == targetBall.value) return Result.BALL;
         return Result.NOTHING;
     }
 }

@@ -10,30 +10,27 @@ public class Balls {
 
     private final List<Ball> balls;
 
-    public Balls(int i, int i1, int i2) {
-        this.balls = Arrays.asList(new Ball(i, 0), new Ball(i1, 1), new Ball(i2, 2));
-    }
-
-    public Balls(List<Integer> sourceIntList) {
-        this.balls = Arrays.asList(new Ball(sourceIntList.get(0), 0), new Ball(sourceIntList.get(1), 1), new Ball(sourceIntList.get(2), 2));
-    }
-
     public Balls(int targetIntList) {
-        this.balls = Arrays.asList(new Ball(targetIntList/100, 0), new Ball(targetIntList%100/10, 1), new Ball(targetIntList%10, 2));
+        this.balls = Arrays.asList(
+                new Ball(targetIntList / 100, 0),
+                new Ball(targetIntList % 100 / 10, 1),
+                new Ball(targetIntList % 10, 2)
+        );
     }
 
-    public List<Result> compare(Balls targetBalls) {
-        List<Result> result = new ArrayList();
+    public Results compareBalls(Balls targetBalls) {
+        List<Result> result = new ArrayList<>();
         List<Ball> targetBallList = targetBalls.getBalls();
         for (Ball ball : targetBallList) {
-            result.add(compare(ball));
+            result.add(compareBall(ball));
         }
-        return result;
+        return new Results(result);
     }
 
-    private Result compare(Ball targetBall) {
+    private Result compareBall(Ball targetBall) {
         for (Ball ball : balls) {
             Result result = ball.compare(targetBall);
+            // TODO: 2뎁스 제거
             if (result != NOTHING) {
                 return result;
             }
