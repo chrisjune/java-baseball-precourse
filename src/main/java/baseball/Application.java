@@ -19,77 +19,80 @@ public class Application {
     private static void playOneTime() {
         int sourceInt = getSourceInt();
         Balls sourceBalls = new Balls(sourceInt);
-
-        while (true) {
+        String gameResult = "";
+        while (!gameResult.equals("3스트라이크")) {
             int targetInt = getTargetInt();
             Balls targetBalls = new Balls(targetInt);
 
             List<Result> result = sourceBalls.compare(targetBalls);
-            String result2 = printResult(result);
-            System.out.println(result2);
-            if (result2.equals("3스트라이크")) {
-                System.out.println("3개의 숫자를 모두 맞히셨습니다! 게임 끝");
-                return;
-            }
+            gameResult = printResult(result);
+            System.out.println(gameResult);
         }
+        System.out.println("3개의 숫자를 모두 맞히셨습니다! 게임 끝");
     }
 
     private static int getTargetInt() {
         System.out.print("숫자를 입력해주세요 : ");
-        int targetIntList = Integer.parseInt(Console.readLine());
-        return targetIntList;
+        int result = 0;
+        try {
+            result = Integer.parseInt(Console.readLine());
+            result = validate3DigitsNumber(result);
+        } catch (NumberFormatException e) {
+            System.out.printf("[ERROR]%s%n", e);
+            result = getTargetInt();
+        }
+        return result;
+    }
+
+    private static int validate3DigitsNumber(int result) {
+        if (result < 100 || result > 999) {
+            System.out.println("[ERROR] 세자리 숫자를 입력해주세요");
+            result = getTargetInt();
+        }
+        return result;
     }
 
     private static int getSourceInt() {
         List<Integer> result = new ArrayList<>();
         while (result.size() < 3) {
-            int val = Randoms.pickNumberInRange(1, 9);
-            if (result.contains(val)) {
-                continue;
-            }
-            result.add(val);
+            getRandomSingleNumber(result);
         }
         return result.get(0) * 100 + result.get(1) * 10 + result.get(2);
     }
 
-
-    private static String printResult(List<Result> result) {
-        int strikeCounts = countStrike(result);
-        int ballCounts = countBall(result);
-        if (strikeCounts > 0 && ballCounts > 0) {
-            return String.format("%d스트라이크 %d볼", strikeCounts, ballCounts);
-        } else if (strikeCounts > 0) {
-            return String.format("%d스트라이크", strikeCounts);
-        } else if (ballCounts > 0) {
-            return String.format("%d볼", ballCounts);
-        } else {
-            return "낫싱";
+    private static void getRandomSingleNumber(List<Integer> result) {
+        int val = Randoms.pickNumberInRange(1, 9);
+        if (result.contains(val)) {
+            return;
         }
+        result.add(val);
     }
 
 
-    private static int countStrike(List<Result> result) {
-        if (!result.contains(Result.STRIKE)) {
+    private static String printResult(List<Result> result) {
+        int strikeCounts = countStrikeBall(result, Result.STRIKE);
+        int ballCounts = countStrikeBall(result, Result.BALL);
+        if (strikeCounts > 0 && ballCounts > 0) return String.format("%d스트라이크 %d볼", strikeCounts, ballCounts);
+        if (strikeCounts > 0) return String.format("%d스트라이크", strikeCounts);
+        if (ballCounts > 0) return String.format("%d볼", ballCounts);
+        return "낫싱";
+    }
+
+    private static int countStrikeBall(List<Result> result, Result resultType) {
+        if (!result.contains(resultType)) {
             return 0;
         }
+
         int count = 0;
         for (Result r : result) {
-            if (r.equals(Result.STRIKE)) {
-                count++;
-            }
+            count = getCount(count, r, resultType);
         }
         return count;
     }
 
-    private static int countBall(List<Result> result) {
-        if (!result.contains(Result.BALL)) {
-            return 0;
-        }
-        int count = 0;
-        for (Result r : result) {
-            if (r.equals(Result.BALL)) {
-                count++;
-            }
+    private static int getCount(int count, Result r, Result ball) {
+        if (r.equals(ball)) {
+            count++;
         }
         return count;
     }
